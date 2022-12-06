@@ -1,0 +1,26 @@
+{
+  "name": "real-estate",
+  "version": "1.0.0",
+  "description": "Proyecto de bienes raíces",
+  "keywords": [
+    "MVC",
+    "Pug",
+    "Tailwind",
+    "MySQL",
+    "Sequelize"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erick-brsa/node-real-estate.git"
+  },
+  "author": "Erick Briones",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/erick-brsa/node-real-estate/issues"
+  },
+  "homepage": "https://github.com/erick-brsa/node-real-estate#readme"
+}
