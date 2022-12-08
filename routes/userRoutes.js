@@ -2,7 +2,8 @@ import express from 'express';
 import {
 	loginForm,
 	registerForm,
-	resetPassword
+	resetPassword,
+	registerUser
 } from '../controllers/userController.js';
 
 const router = express.Router();
@@ -10,5 +11,7 @@ const router = express.Router();
 router.get('/login', loginForm);
 router.get('/register', registerForm);
 router.get('/reset-password', resetPassword);
+
+router.post('/register', registerUser)
 
 export default router;
