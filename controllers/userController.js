@@ -1,6 +1,6 @@
 import { check, validationResult } from 'express-validator';
 import User from '../models/User.js';
-import { generateId } from '../helpers/index.js';
+import { generateId, emailRegister } from '../helpers/index.js';
 
 export const loginForm = (req, res) => {
 	res.render('auth/login', {
@@ -10,7 +10,8 @@ export const loginForm = (req, res) => {
 
 export const registerForm = (req, res) => {
 	res.render('auth/register', {
-		page: 'Crear Cuenta'
+		page: 'Crear Cuenta',
+		csrfToken: req.csrfToken()
 	});
 };
 
@@ -45,6 +46,7 @@ export const registerUser = async (req, res) => {
 	if (!result.isEmpty()) {
 		return res.render('auth/register', {
 			page: 'Crear Cuenta',
+			csrfToken: req.csrfToken(),
 			errors: result.array(),
 			user: {
 				name,
@@ -59,6 +61,7 @@ export const registerUser = async (req, res) => {
 	if (user) {
 		return res.render('auth/register', {
 			page: 'Crear Cuenta',
+			csrfToken: req.csrfToken(),
 			errors: [{ msg: 'El usuario ya está registrado' }],
 			user: {
 				name,
@@ -75,9 +78,42 @@ export const registerUser = async (req, res) => {
 		token: generateId()
 	});
 
+	// Envía correo de confirmación
+	emailRegister({
+		name: newUser.name,
+		email: newUser.email,
+		token: newUser.token
+	});
+
 	// Mensaje de confirmación
 	res.render('templates/message', {
 		page: 'Cuenta creada correctamente',
-		message: 'Hemos enviado un correo de confirmación, revisa tu bandeja de entrada.'
-	})
+		message:
+			'Hemos enviado un correo de confirmación, revisa tu bandeja de entrada.'
+	});
+};
+
+export const confirmUser = async (req, res) => {
+	const { token } = req.params;
+
+	const user = await User.findOne({ where: { token } });
+
+	if (!user) {
+		return res.render('auth/confirm-account', {
+			page: 'Error al confirmar la cuenta',
+			message: 'Hubo un error al confirmar tu cuenta, intenta de nuevo',
+			error: true
+		});
+	}
+
+	user.token = null;
+	user.confirmed = true;
+
+	await user.save();
+
+	return res.render('auth/confirm-account', {
+		page: 'Cuenta confirmada',
+		message: 'La cuenta ha sido confirmada',
+		error: false
+	});
 };

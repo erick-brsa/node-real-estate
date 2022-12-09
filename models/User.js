@@ -22,7 +22,9 @@ const User = db.define(
 			type: DataTypes.STRING
 		},
 		confirmed: {
-			type: DataTypes.BOOLEAN
+			type: DataTypes.BOOLEAN,
+			 defaultValue: false,
+
 		}
 	},
 	{
