@@ -1,6 +1,6 @@
 import { check, validationResult } from 'express-validator';
 import User from '../models/User.js';
-import { generateId, emailRegister } from '../helpers/index.js';
+import { generateId, emailRegister, emailResetPassword } from '../helpers/index.js';
 
 export const loginForm = (req, res) => {
 	res.render('auth/login', {
@@ -12,12 +12,6 @@ export const registerForm = (req, res) => {
 	res.render('auth/register', {
 		page: 'Crear Cuenta',
 		csrfToken: req.csrfToken()
-	});
-};
-
-export const resetPassword = (req, res) => {
-	res.render('auth/reset-password', {
-		page: 'Recuperar Contraseña'
 	});
 };
 
@@ -117,3 +111,62 @@ export const confirmUser = async (req, res) => {
 		error: false
 	});
 };
+
+export const formResetPassword = (req, res) => {
+	res.render('auth/reset-password', {
+		page: 'Recuperar Contraseña'
+	});
+};
+
+export const resetPassword = async () => {
+
+	await check('email')
+		.isEmail()
+		.withMessage('Eso no parece un email')
+		.run(req);
+
+	let result = validationResult(req);
+
+	if (!result.isEmpty()) {
+		return res.render('auth/reset-password', {
+			page: 'Recupera tu acceso',
+			csrfToken: req.csrfToken(),
+			errors: result.array(),
+		});
+	}
+
+	// Buscar al usuario
+	const { email, newPassword } = req.body;
+
+	const user = await User.findOne({ where: email });
+
+	if (!user) {
+		return res.render('auth/reset-password', {
+			page: 'Recupera tu acceso',
+			csrfToken: req.csrfToken(),
+			errors: [{ msg: 'El correo no está registrado '}],
+		});
+	}
+
+	// Generar un token y enviar email
+	user.token = generateId();
+	await user.save();
+	
+	// Enviar email
+	emailResetPassword({
+		email: user.email,
+		name: user.name,
+		token: user.token
+	})
+	
+
+	// Renderizar el mensaje
+	res.render('templates/message', {
+		page: '',
+		message: ''
+	})
+};
+
+export const checkToken = () => {};
+
+export const newPassword = () => {};
