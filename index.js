@@ -11,11 +11,11 @@ const app = express();
 // Middlewares
 
 // Habilitar lectura de datos de formularios
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 // Habilitar Cookie Parser
-app.use(cookieParser())
+app.use(cookieParser());
 // Habilitar CSRF
-app.use(csurf({ cookie: true }))
+app.use(csurf({ cookie: true }));
 // Carpeta pública
 app.use(express.static('public'));
 // Routing
@@ -25,9 +25,9 @@ app.use('/auth', userRoutes);
 try {
 	await db.authenticate();
 	db.sync();
-	console.log('Conexión correcta a la base de datos')
+	console.log('Conexión correcta a la base de datos');
 } catch (error) {
-	console.log(error)
+	console.log(error);
 }
 
 // Habilitar Pug

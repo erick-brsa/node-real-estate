@@ -23,8 +23,7 @@ const User = db.define(
 		},
 		confirmed: {
 			type: DataTypes.BOOLEAN,
-			 defaultValue: false,
-
+			defaultValue: false
 		}
 	},
 	{

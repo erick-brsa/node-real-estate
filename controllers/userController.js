@@ -1,6 +1,12 @@
 import { check, validationResult } from 'express-validator';
+import bcrypt from 'bcrypt';
+
 import User from '../models/User.js';
-import { generateId, emailRegister, emailResetPassword } from '../helpers/index.js';
+import {
+	generateId,
+	emailRegister,
+	emailResetPassword
+} from '../helpers/index.js';
 
 export const loginForm = (req, res) => {
 	res.render('auth/login', {
@@ -106,20 +112,20 @@ export const confirmUser = async (req, res) => {
 	await user.save();
 
 	return res.render('auth/confirm-account', {
-		page: 'Cuenta confirmada',
+		page: 'Cuenta Confirmada',
 		message: 'La cuenta ha sido confirmada',
 		error: false
 	});
 };
 
 export const formResetPassword = (req, res) => {
-	res.render('auth/reset-password', {
-		page: 'Recuperar Contraseña'
+	res.render('auth/forgot-password', {
+		page: 'Recuperar Contraseña',
+		csrfToken: req.csrfToken()
 	});
 };
 
-export const resetPassword = async () => {
-
+export const resetPassword = async (req, res) => {
 	await check('email')
 		.isEmail()
 		.withMessage('Eso no parece un email')
@@ -128,45 +134,91 @@ export const resetPassword = async () => {
 	let result = validationResult(req);
 
 	if (!result.isEmpty()) {
-		return res.render('auth/reset-password', {
+		return res.render('auth/forgot-password', {
 			page: 'Recupera tu acceso',
 			csrfToken: req.csrfToken(),
-			errors: result.array(),
+			errors: result.array()
 		});
 	}
 
 	// Buscar al usuario
-	const { email, newPassword } = req.body;
+	const { email } = req.body;
 
-	const user = await User.findOne({ where: email });
+	const user = await User.findOne({ where: { email } });
 
 	if (!user) {
-		return res.render('auth/reset-password', {
+		return res.render('auth/forgot-password', {
 			page: 'Recupera tu acceso',
 			csrfToken: req.csrfToken(),
-			errors: [{ msg: 'El correo no está registrado '}],
+			errors: [{ msg: 'El correo no está registrado ' }]
 		});
 	}
 
 	// Generar un token y enviar email
 	user.token = generateId();
 	await user.save();
-	
+
 	// Enviar email
 	emailResetPassword({
 		email: user.email,
 		name: user.name,
 		token: user.token
-	})
-	
+	});
 
 	// Renderizar el mensaje
 	res.render('templates/message', {
-		page: '',
-		message: ''
-	})
+		page: 'Restablece tu contraseña',
+		message: 'Hemos enviado un correo electrónico con las instrucciones'
+	});
 };
 
-export const checkToken = () => {};
+export const checkToken = async (req, res) => {
+	const { token } = req.params;
+	const user = await User.findOne({ where: { token } });
 
-export const newPassword = () => {};
+	if (!user) {
+		return res.render('auth/reset-password', {
+			page: 'Reestablece tu contraseña',
+			message:
+				'Hubo un error al validar tu información, intenta de nuevo',
+			error: true
+		});
+	}
+
+	res.render('auth/reset-password', {
+		page: 'Reestablece tu contraseña',
+		csrfToken: req.csrfToken()
+	});
+};
+
+export const newPassword = async (req, res) => {
+	await check('password')
+		.isLength({ min: 6 })
+		.withMessage('La contraseña debe ser de al menos 6 caracteres')
+		.run(req);
+
+	let result = validationResult(req);
+
+	if (!result.isEmpty()) {
+		return res.render('auth/reset-password', {
+			page: 'Reestablece tu contraseña',
+			csrfToken: req.csrfToken(),
+			errors: result.array()
+		});
+	}
+
+	const { token } = req.params;
+	const { password } = req.body;
+
+	const user = await User.findOne({ where: { token } });
+
+	const salt = await bcrypt.genSalt(10);
+	user.password = await bcrypt.hash(password, salt);
+	user.token = null;
+	await user.save();
+
+	res.render('auth/confirm-account', {
+		page: 'Contraseña reestablecida',
+		message: 'La contraseña se reestableció correctamente'
+	});
+};
