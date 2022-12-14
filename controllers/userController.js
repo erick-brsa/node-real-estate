@@ -1,17 +1,72 @@
 import { check, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 
+
 import User from '../models/User.js';
-import {
-	generateId,
-	emailRegister,
-	emailResetPassword
-} from '../helpers/index.js';
+import { generateId, generateJWT, emailRegister, emailResetPassword } from '../helpers/index.js';
 
 export const loginForm = (req, res) => {
 	res.render('auth/login', {
-		page: 'Iniciar Sesión'
+		page: 'Iniciar Sesión',
+		csrfToken: req.csrfToken()
 	});
+};
+
+export const authenticate = async (req, res) => {
+
+	await check('email')
+		.isEmail()
+		.withMessage('El email es obligatorio')
+		.run(req);
+	await check('password')
+		.notEmpty()
+		.withMessage('La contraseña es obligatoria')
+		.run(req);
+	
+	let result = validationResult(req);
+
+	if (!result.isEmpty()) {
+		return res.render('auth/login', {
+			page: 'Iniciar Sesión',
+			csrfToken: req.csrfToken(),
+			errors: result.array(),
+		});
+	}
+	
+	// Comprobar si el usuario existe
+	const { email, password } = req.body;
+
+	const user = await User.findOne({ where: { email }});
+
+	if (!user) {
+		return res.render('auth/login', {
+			page: 'Iniciar Sesión',
+			csrfToken: req.csrfToken(),
+			errors: [{ msg: 'El usuario no existe' }],
+		});
+	}
+	
+	if (!user.confirmed) {
+		return res.render('auth/login', {
+			page: 'Iniciar Sesión',
+			csrfToken: req.csrfToken(),
+			errors: [{ msg: 'Tu cuenta no ha sido confirmada' }],
+		});
+	}
+
+	// Revisar password
+	if(!user.checkPassword(password)) {
+		return res.render('auth/login', {
+			page: 'Iniciar Sesión',
+			csrfToken: req.csrfToken(),
+			errors: [{ msg: 'La contraseña es incorrecta' }],
+		});
+	}
+
+	// Autenticar al usuario
+	const token = generateJWT(user);
+
+	// TODO: permitir el acceso 
 };
 
 export const registerForm = (req, res) => {
@@ -222,3 +277,8 @@ export const newPassword = async (req, res) => {
 		message: 'La contraseña se reestableció correctamente'
 	});
 };
+
+// Métodos personalizados
+User.prototype.checkPassword = function(password) {
+	return bcrypt.compareSync(password, this.password);
+} 
