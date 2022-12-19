@@ -3,6 +3,7 @@ import csurf from 'csurf';
 import cookieParser from 'cookie-parser';
 
 import userRoutes from './routes/userRoutes.js';
+import estateRoutes from './routes/estateRoutes.js';
 import db from './config/db.js';
 
 // Crear la app
@@ -20,6 +21,7 @@ app.use(csurf({ cookie: true }));
 app.use(express.static('public'));
 // Routing
 app.use('/auth', userRoutes);
+app.use('/estate', estateRoutes);
 
 // Conexión a la base de datos
 try {

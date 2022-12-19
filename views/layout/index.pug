@@ -8,5 +8,10 @@ html(lang="es")
         link(rel="stylesheet", href="/css/app.css")
         title Bienes Raíces | #{page}
     body(class="min-h-screen bg-gray-50")
+        if bar
+            include header
+
         main(class="mx-auto container mt-5 px-2")
             block content
+        
+        block scripts
