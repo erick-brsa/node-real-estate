@@ -18,6 +18,9 @@ block content
                     div
                         label(class="block text-sm uppercase text-gray-600 mb-2 font-bold" for="title") Título del anuncio
                         input(class="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400" id="title" placeholder="Título de la propiedad, Ej. Casa en la playa" type="text" name="title")
+                    div
+                        label(class="block text-sm uppercase text-gray-600 mb-2 font-bold" for="description") Descripción
+                        textarea(class="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400" id="description" placeholder="Descripción de la propiedad" name="description")
 
                     div(class="md:flex md:gap-4 space-y-5 md:space-y-0")
                         div(class="md:w-1/2")
@@ -52,7 +55,16 @@ block content
                                 - let wc = 1;
                                     while wc < 5
                                         option(value=wc) #{wc++}
-                    #mapa.h-96
+                    div(class="border-gray-200 border-t py-5 space-y-5")
+                        h3(class="text-lg leading-6 font-medium text-gray-900") Ubicación
+                        p(class="text-gray-600") Ubica la propiedad en el mapa         
+                        #mapa.h-96
+                        
+                        div(class="")
+                            p(class="street")
+                        input(type="hidden" name="street" id="street")
+                        input(type="hidden" name="lat" id="lat")
+                        input(type="hidden" name="lng" id="lng")
 
 block scripts
     script(src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js")

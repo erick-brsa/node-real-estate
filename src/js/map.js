@@ -26,9 +26,11 @@
 
 		// Obtener la información de las calles al soltar el pin
 		geocodeService.reverse().latlng(position, 13).run(function(error, result) {
-            console.log(result)
-            // marker.bindPopup()
+            // console.log(result)
             marker.bindPopup(result.address.LongLabel)
+
+            // Llenar los campos
+            document.querySelector('.street').textContent = result.address.Address ?? ''
         });
 	});
 })();
