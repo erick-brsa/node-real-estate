@@ -21,7 +21,7 @@ app.use(csurf({ cookie: true }));
 app.use(express.static('public'));
 // Routing
 app.use('/auth', userRoutes);
-app.use('/estate', estateRoutes);
+app.use('/', estateRoutes);
 
 // Conexión a la base de datos
 try {

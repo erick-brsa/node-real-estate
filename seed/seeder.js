@@ -1,8 +1,7 @@
-import Category from "../models/Category.js";
 import categories from "./categories.js";
-
-import Price from  "../models/Price.js";
 import prices from "./prices.js";
+
+import { Category, Price } from '../models/index.js';
 
 import db from "../config/db.js";
 
@@ -36,7 +35,7 @@ const clearDatabase = async () => {
         // ]);
         await db.sync({ force: true });
         console.log('Datos eliminados correctamente');
-        exit();
+        process.exit();
     } catch (error) {
         console.log();
         process.exit(1)
