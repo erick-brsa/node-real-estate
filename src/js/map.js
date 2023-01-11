@@ -1,6 +1,6 @@
 (function () {
-	const lat = 19.4065478;
-	const lng = -99.1319522;
+	const lat = document.querySelector('#lat').value || 19.4065478;
+	const lng = document.querySelector('#lng').value || -99.1319522;
 	const mapa = L.map('mapa').setView([lat, lng], 11);
 
 	// Utilizar el Provider y Geocoder

@@ -20,7 +20,8 @@ export const create = async (req, res) => {
         bar: true,
         csrfToken: req.csrfToken(),
         categories,
-        prices
+        prices,
+        data: {}
     });
 };
 
@@ -42,7 +43,8 @@ export const save = async (req,res) => {
             csrfToken: req.csrfToken(),
             categories,
             prices,
-            errors: result.array()
+            errors: result.array(),
+            data: req.body
         });
     }
 };
