@@ -17,7 +17,7 @@
 		autoPan: true
 	}).addTo(mapa);
 
-	// Detecctar el mmovimiento del pin
+	// Detectar el movimiento del pin
 	marker.on('moveend', (e) => {
 		marker = e.target;
 		// console.log(marker.getLatLng())
@@ -30,7 +30,10 @@
             marker.bindPopup(result.address.LongLabel)
 
             // Llenar los campos
-            document.querySelector('.street').textContent = result.address.Address ?? ''
+            document.querySelector('.street').textContent = result?.address?.Address ?? ''
+			document.querySelector('#street').value = result?.address?.Address ?? '';
+			document.querySelector('#lat').value = result?.latlng?.lat ?? '';
+			document.querySelector('#lng').value = result?.latlng?.lng ?? '';
         });
 	});
 })();

@@ -36,6 +36,7 @@ export const save = async (req,res) => {
             Category.findAll(),
             Price.findAll()
         ]);
+        console.log(req.body)
         
         return res.render('estate/create', {
             page: 'Crear propiedad',

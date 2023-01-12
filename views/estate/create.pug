@@ -41,7 +41,7 @@ block content
                             select(class="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400" id="price" name="price")
                                 option(value="") Seleccione
                                 each price in prices 
-                                    option(value=price.id selected= data.price ? data.price == price.id  ? true : false : null)= price.name
+                                    option(value=price.id selected= data.price ? data.price == price.id  ? true : false : null)= price.value
 
                     div(class="md:flex md:gap-4 space-y-5 md:space-y-0")
                         div(class="md:w-1/3")
@@ -75,7 +75,7 @@ block content
                         
                         div(class="")
                             p(class="street")= data.street ? data.street : ''
-                        input(type="hidden" name="street" id="street" value=: data.street ? data.street : '')
+                        input(type="hidden" name="street" id="street" value= data.street ? data.street : '')
                         input(type="hidden" name="lat" id="lat" value= data.lat ? data.lat : '')
                         input(type="hidden" name="lng" id="lng" value= data.lng ? data.lng : '')
 
