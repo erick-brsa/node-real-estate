@@ -1,6 +1,5 @@
 import { validationResult } from 'express-validator';
-import Price from "../models/Price.js";
-import Category from "../models/Category.js";
+import { Price, Category } from '../models/index.js';
 
 export const admin = (req, res) => {
     res.render('estate/admin'), {
@@ -36,7 +35,6 @@ export const save = async (req,res) => {
             Category.findAll(),
             Price.findAll()
         ]);
-        console.log(req.body)
         
         return res.render('estate/create', {
             page: 'Crear propiedad',
@@ -47,5 +45,24 @@ export const save = async (req,res) => {
             errors: result.array(),
             data: req.body
         });
+    }
+
+    // Guardar registro
+    const { title, description, category, price, bedrooms, parking, wc, street, lat, lng } = req.body;
+    try {
+        const savedData = await Estate.create({
+            title, 
+            description, 
+            bedrooms, 
+            parking, 
+            wc, 
+            street, 
+            lat, 
+            lng,
+            priceId: price,
+            categoryId: category
+        });
+    } catch (error) {
+        console.log(error);
     }
 };

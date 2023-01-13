@@ -1,7 +1,8 @@
 import categories from "./categories.js";
 import prices from "./prices.js";
+import users from "./users.js"
 
-import { Category, Price } from '../models/index.js';
+import { Category, Price, User } from '../models/index.js';
 
 import db from "../config/db.js";
 
@@ -16,7 +17,8 @@ const importData = async () => {
         // Insertar los datos 
         await Promise.all([
             Category.bulkCreate(categories), 
-            Price.bulkCreate(prices)
+            Price.bulkCreate(prices),
+            User.bulkCreate(users)
         ]);
 
         console.log('Datos importados correctamente')
@@ -35,9 +37,9 @@ const clearDatabase = async () => {
         // ]);
         await db.sync({ force: true });
         console.log('Datos eliminados correctamente');
-        process.exit();
+        process.exit(0);
     } catch (error) {
-        console.log();
+        console.log(error);
         process.exit(1)
     }
 }

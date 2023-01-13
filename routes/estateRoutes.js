@@ -1,12 +1,13 @@
 import express from 'express';
 import { body } from 'express-validator';
 import { admin, save, create } from '../controllers/estateController.js';
+import protectRoute from '../middleware/protectRoute.js';
 
 const router = express.Router();
 
-router.get('/my-real-estates', admin);
-router.get('/real-estate/create', create);
-router.post('/real-estate/create',
+router.get('/my-real-estates', protectRoute, admin);
+router.get('/real-estate/create', protectRoute, create);
+router.post('/real-estate/create', protectRoute,
 	body('title')
 		.notEmpty()
 		.withMessage('El título del anuncio es obligatorio'),
