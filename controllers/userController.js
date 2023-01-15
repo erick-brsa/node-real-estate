@@ -64,12 +64,13 @@ export const authenticate = async (req, res) => {
 
 	// Autenticar al usuario
 	const token = generateJWT(user);
+
 	return res.cookie('_token', token, {
 		// expires: 
 		// httpOnly: true,
 		// secure: true,
 		// sameSite: true,
-	}).redirect('/mis-propiedades')
+	}).redirect('/my-real-estate')
 };
 
 export const registerForm = (req, res) => {

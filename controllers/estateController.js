@@ -49,6 +49,8 @@ export const save = async (req,res) => {
 
     // Guardar registro
     const { title, description, category, price, bedrooms, parking, wc, street, lat, lng } = req.body;
+    const {id: userId } = req.user;
+
     try {
         const savedData = await Estate.create({
             title, 
@@ -60,8 +62,12 @@ export const save = async (req,res) => {
             lat, 
             lng,
             priceId: price,
-            categoryId: category
+            categoryId: category,
+            userId,
+            image: ''
         });
+        const { id } = savedData;
+        res.redirect(`/real-estate/add-image/${id}`)
     } catch (error) {
         console.log(error);
     }
