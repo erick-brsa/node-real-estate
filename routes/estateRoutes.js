@@ -1,6 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { admin, save, create } from '../controllers/estateController.js';
+import { admin, save, create, addImage } from '../controllers/estateController.js';
 import protectRoute from '../middleware/protectRoute.js';
 
 const router = express.Router();
@@ -26,8 +26,8 @@ router.post('/real-estate/create', protectRoute,
 		.withMessage('Selecciona la cantidad de estacionamientos'),
 	body('wc').isNumeric().withMessage('Selecciona la cantidad de baños'),
 	body('lat').notEmpty().withMessage('Ubica la propiedad en el mapa'),
-
 	save
 );
+router.get('/real-estate/add-image/:id', protectRoute, addImage)
 
 export default router;

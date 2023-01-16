@@ -1,10 +1,9 @@
 import { validationResult } from 'express-validator';
-import { Price, Category } from '../models/index.js';
+import { Price, Category, Estate } from '../models/index.js';
 
 export const admin = (req, res) => {
     res.render('estate/admin'), {
-        page: 'Mis propiedades',
-        bar: true
+        page: 'Mis propiedades'
     }
 };
 
@@ -16,7 +15,6 @@ export const create = async (req, res) => {
 
     res.render('estate/create', {
         page: 'Crear propiedad',
-        bar: true,
         csrfToken: req.csrfToken(),
         categories,
         prices,
@@ -25,7 +23,6 @@ export const create = async (req, res) => {
 };
 
 export const save = async (req,res) => {
-    
     // Validación
     let result = validationResult(req);
     
@@ -38,7 +35,6 @@ export const save = async (req,res) => {
         
         return res.render('estate/create', {
             page: 'Crear propiedad',
-            bar: true,
             csrfToken: req.csrfToken(),
             categories,
             prices,
@@ -71,4 +67,28 @@ export const save = async (req,res) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+export const addImage = async (req, res) => {
+    // Validar que la propiedad exista
+    const { id } = req.params;
+    
+    const estate = await Estate.findByPk(id);
+    if (!estate) {
+        res.redirect('/my-real-estates');
+    }
+
+    // Validar que la propiedad no esté publicada
+    if (estate.published) {
+        res.redirect('/my-real-estates');
+    }
+
+    // Validar que la propiedad pertenece al quien visite la página
+    if (estate.id.toString() !== req.user.id.toString()) {
+        res.redirect('/my-real-estates')
+    }
+
+    res.render('estate/add-image', {
+        page: 'Agregar imagen'
+    });
 };
