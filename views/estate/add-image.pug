@@ -2,6 +2,7 @@ extends ../layout/admin
 
 block styles
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.css")
+    meta(name="csrf-token" content= csrfToken)
 
 block content
     div(class="py-10")
@@ -10,10 +11,10 @@ block content
         h2(class="text-center text-2xl font-extrabold")= page
 
         div(class="bg-white shadow py-8 px-4 rounded mx-auto max-w-4xl my-10 md:px-10")
-            form(class="dropzone border-dashed border-2 w-full min:h-96 h-auto rounded flex-col justify-center items-center" method="POST" action="/real-estate/create")
+            form(id="image" class="dropzone border-dashed border-2 w-full min:h-96 h-auto rounded flex-col justify-center items-center" method="POST" action=`/real-estate/add-image/${estate.id}`)
                 input(type="hidden" name="_csrf" value= csrfToken)
 
-            input(class="mt-5 w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded text-white font-bold uppercase cursor-pointer" type="submit" value="Publicar Propiedad")
+            button(class="mt-5 w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded text-white font-bold uppercase cursor-pointer" id="post" type="button") Publicar Propiedad
 
 block scripts
     script(src="/js/addImage.js")

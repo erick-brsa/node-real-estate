@@ -1,7 +1,8 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { admin, save, create, addImage } from '../controllers/estateController.js';
+import { admin, save, create, addImage, saveImages } from '../controllers/estateController.js';
 import protectRoute from '../middleware/protectRoute.js';
+import upload from '../middleware/uploadFile.js';
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.post('/real-estate/create', protectRoute,
 	body('lat').notEmpty().withMessage('Ubica la propiedad en el mapa'),
 	save
 );
-router.get('/real-estate/add-image/:id', protectRoute, addImage)
+router.get('/real-estate/add-image/:id', protectRoute, addImage);
+router.poat ('/real-estate/add-image/:id', protectRoute, upload.single('image'), saveImages);
 
 export default router;

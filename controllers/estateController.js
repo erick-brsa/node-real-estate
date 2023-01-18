@@ -45,7 +45,7 @@ export const save = async (req,res) => {
 
     // Guardar registro
     const { title, description, category, price, bedrooms, parking, wc, street, lat, lng } = req.body;
-    const {id: userId } = req.user;
+    const { id: userId } = req.user;
 
     try {
         const savedData = await Estate.create({
@@ -63,7 +63,7 @@ export const save = async (req,res) => {
             image: ''
         });
         const { id } = savedData;
-        res.redirect(`/real-estate/add-image/${id}`)
+        res.redirect(`/real-estate/add-image/${id}`);
     } catch (error) {
         console.log(error);
     }
@@ -74,6 +74,7 @@ export const addImage = async (req, res) => {
     const { id } = req.params;
     
     const estate = await Estate.findByPk(id);
+
     if (!estate) {
         res.redirect('/my-real-estates');
     }
@@ -85,10 +86,42 @@ export const addImage = async (req, res) => {
 
     // Validar que la propiedad pertenece al quien visite la página
     if (estate.id.toString() !== req.user.id.toString()) {
-        res.redirect('/my-real-estates')
+        res.redirect('/my-real-estates');
     }
 
     res.render('estate/add-image', {
-        page: 'Agregar imagen'
+        page: `Agregar imagen: ${estate.title}`,
+        csrfToken: req.csrfToken(),
+        estate
     });
+};
+
+export const saveImages = async (req, res, next) => {
+    // Validar que la propiedad exista
+    const { id } = req.params;
+    
+    const estate = await Estate.findByPk(id);
+
+    if (!estate) {
+        res.redirect('/my-real-estates');
+    }
+
+    // Validar que la propiedad no esté publicada
+    if (estate.published) {
+        res.redirect('/my-real-estates');
+    }
+
+    // Validar que la propiedad pertenece al quien visite la página
+    if (estate.id.toString() !== req.user.id.toString()) {
+        res.redirect('/my-real-estates');
+    }
+    try {
+        // Almacenar la imagen y publicar propiedad
+        estate.image = req.file.filename;
+        estate.published = 1;
+        await estate.save();
+        next();
+    } catch (error) {
+        console.log(error);
+    }
 };
