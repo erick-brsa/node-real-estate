@@ -13,7 +13,7 @@ block content
 
         div(class="mt-8 mx-auto max-w-md")
             div(class="bg-white py-8 px-4 shadow")
-                form(class="space-y-5")
+                form(class="space-y-5" method="POST" action="/auth/login")
                     input(type="hidden" name="_csrf" value= csrfToken)
                     div
                         label(class="block text-sm uppercase text-gray-600 mb-2 font-bold" for="email") Email

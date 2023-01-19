@@ -30,6 +30,6 @@ router.post('/real-estate/create', protectRoute,
 	save
 );
 router.get('/real-estate/add-image/:id', protectRoute, addImage);
-router.poat ('/real-estate/add-image/:id', protectRoute, upload.single('image'), saveImages);
+router.post('/real-estate/add-image/:id', protectRoute, upload.single('image'), saveImages);
 
 export default router;

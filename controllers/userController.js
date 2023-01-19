@@ -1,7 +1,7 @@
 import { check, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 
-import User from '../models/User.js';
+import { User } from '../models/index.js';
 import { generateId, generateJWT, emailRegister, emailResetPassword } from '../helpers/index.js';
 
 export const loginForm = (req, res) => {
@@ -35,7 +35,9 @@ export const authenticate = async (req, res) => {
 	// Comprobar si el usuario existe
 	const { email, password } = req.body;
 
-	const user = await User.findOne({ where: { email }});
+	const user = await User.findOne({ 
+		where: { email }
+	});
 
 	if (!user) {
 		return res.render('auth/login', {
@@ -70,7 +72,7 @@ export const authenticate = async (req, res) => {
 		// httpOnly: true,
 		// secure: true,
 		// sameSite: true,
-	}).redirect('/my-real-estate')
+	}).redirect('/my-real-estates')
 };
 
 export const registerForm = (req, res) => {
