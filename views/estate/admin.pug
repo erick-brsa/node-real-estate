@@ -29,9 +29,10 @@ block content
                                     form(action="#")
                                         input(type="submit" class=`w-full px-2 py-2 md:py-1 text-md leading-5 font-semibold rounded-sm cursor-pointer ${estate.published ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}` value=`${estate.published ? 'Publicado' : 'No publicado'}`)
                                     
-                                    a(href="#" class="text-center px-2 py-2 md:py-1 text-md leading-5 font-semibold rounded-sm cursor-pointer bg-indigo-100 text-indigo-800") Editar
+                                    a(href=`/real-estate/edit/${estate.id}` class="text-center px-2 py-2 md:py-1 text-md leading-5 font-semibold rounded-sm cursor-pointer bg-indigo-100 text-indigo-800") Editar
 
-                                    form(action="#")
+                                    form(method="POST" action=`/real-estate/delete/${estate.id}`)
+                                        input(type="hidden" name="_csrf" value= csrfToken)
                                         input(type="submit" class="w-full px-2 py-2 md:py-1 text-md leading-5 font-semibold rounded-sm cursor-pointer bg-stone-00 bg-red-100  text-red-800" value="Eliminar")
         else 
             p(class="text-center") No hay propiedades

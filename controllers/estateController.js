@@ -1,3 +1,4 @@
+import { unlink } from 'node:fs/promises';
 import { validationResult } from 'express-validator';
 import { Price, Category, Estate } from '../models/index.js';
 
@@ -13,7 +14,8 @@ export const admin = async (req, res) => {
     })
 
 	res.render('estate/admin', {
-		page: 'Mis propiedades',
+		page: `Mis propiedades`,
+		csrfToken: req.csrfToken(),
         estates
 	});
 };
@@ -125,4 +127,92 @@ export const saveImages = async (req, res, next) => {
 	} catch (error) {
 		console.log(error);
 	}
+};
+
+export const edit = async (req, res) => {
+	const { id } = req.params;
+	const estate = await Estate.findByPk(id);
+
+	if (!estate) {
+		return res.redirect('/my-real-estates');
+	}
+	
+	if (estate.userId.toString() !== req.user.id.toString()) {
+		return res.redirect('/my-real-estates');
+	}
+
+	const [categories, prices] = await Promise.all([
+		Category.findAll(),
+		Price.findAll()
+	]);
+
+	res.render('estate/edit', {
+		page: `Editar propiedad: ${estate.title}`,
+		csrfToken: req.csrfToken(),
+		categories,
+		prices,
+		data: estate
+	});
+};
+
+export const saveChanges = async (req, res) => {
+	// Validación
+	let result = validationResult(req);
+
+	if (!result.isEmpty()) {
+		const [categories, prices] = await Promise.all([
+			Category.findAll(),
+			Price.findAll()
+		]);
+
+		return res.render('estate/edit', {
+			page: `Editar propiedad: ${req.body.title}`,
+			csrfToken: req.csrfToken(),
+			categories,
+			prices,
+			errors: result.array(),
+			data: req.body
+		});
+	}
+	const { id } = req.params;
+	const estate = await Estate.findByPk(id);
+
+	if (!estate) {
+		return res.redirect('/my-real-estates');
+	}
+	
+	if (estate.userId.toString() !== req.user.id.toString()) {
+		return res.redirect('/my-real-estates');
+	}
+
+	// Reescribir el objeto y actualizar
+	const { title, description, category: categoryId, price: precioId, bedrooms, parking, wc, street, lat, lng } = req.body;
+	
+	try {
+		estate.set({ title, description, category: categoryId, price: precioId, bedrooms, parking, wc, street, lat, lng });
+		await estate.save();
+		res.redirect('/my-real-estates');
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+export const deleteEstate = async (req, res) => {
+	const { id } = req.params;
+	const estate = await Estate.findByPk(id);
+
+	if (!estate) {
+		return res.redirect('/my-real-estates');
+	}
+	
+	if (estate.userId.toString() !== req.user.id.toString()) {
+		return res.redirect('/my-real-estates');
+	}
+
+	// Eliminar registro
+	await unlink(`public/uploads/${estate.image}`);
+
+	// Eliminar registro
+	await estate.destroy();
+	res.redirect('/my-real-estate');
 };
