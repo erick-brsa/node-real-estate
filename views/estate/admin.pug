@@ -18,7 +18,7 @@ block content
                                 div(class="sm:w-1/4 md:w-1/6")
                                     img(src=`uploads/${estate.image}` alt=`Imagen propiedad ${estate.title}` class="w-full max-h-48 object-cover")
                                 div(class="sm:w-2/4 md:w-3/6 lg:w-4/6 space-y-3")
-                                    a(href=`#` class="block text-2xl font-extrabold text-indigo-600 truncate")= estate.title
+                                    a(href=`/estate/${estate.id}` class="block text-2xl font-extrabold text-indigo-600 truncate")= estate.title
                                     p(class="text-sm text-black font-bold")= estate.category.name
                                     p(class="text-sm text-gray-800 font-bold flex items-center")
                                         svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6")

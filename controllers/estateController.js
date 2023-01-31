@@ -216,3 +216,22 @@ export const deleteEstate = async (req, res) => {
 	await estate.destroy();
 	res.redirect('/my-real-estate');
 };
+
+export const showEstate = async (req, res) => {
+	const { id } = req.params;
+	const estate = await Estate.findByPk(id, {
+		include: [
+			{ model: Price, as: 'price' },
+			{ model: Category, as: 'category' }
+		]
+	});
+	
+	if (!estate) {
+		return res.redirect('/404');
+	}
+	
+	res.render('estate/show', {
+		estate,
+		page: estate.title
+	});
+};

@@ -1,6 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { admin, save, create, addImage, saveImages, edit, saveChanges, deleteEstate } from '../controllers/estateController.js';
+import { admin, save, create, addImage, saveImages, edit, saveChanges, deleteEstate, showEstate } from '../controllers/estateController.js';
 import protectRoute from '../middleware/protectRoute.js';
 import upload from '../middleware/uploadFile.js';
 
@@ -56,5 +56,8 @@ router.post('/real-estate/edit/:id', protectRoute,
 );
 
 router.post('/real-estate/delete/:id', protectRoute, deleteEstate);
+
+// Área pública
+router.get('/estate/:id', showEstate);
 
 export default router;
