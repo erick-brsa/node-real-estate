@@ -6,11 +6,11 @@ block content
             span(class="font-normal") Raices
         h2(class="text-center text-2xl font-extrabold")= page
 
-        a(href="/real-estate/create" class="rounded py-2 px-10 bg-indigo-600 hover:bg-indigo-700 text-sm text-white font-bold inline-block sm:w-auto") Publicar Propiedad
+        a(href="/real-estate/create" class="rounded py-2 px-10 bg-indigo-600 hover:bg-indigo-700 text-sm text-white font-bold inline-block sm:w-auto w-full text-center my-4 sm:my-1") Publicar Propiedad
 
         //- pre= JSON.stringify(estates, undefined, 2)
         if estates.length
-            idv(class="bg-white shadow rounded-lg")
+            div(class="bg-white shadow rounded-lg")
                 ul(class="divide-y divide-green-200")
                     each estate in estates
                         li
@@ -34,5 +34,19 @@ block content
                                     form(method="POST" action=`/real-estate/delete/${estate.id}`)
                                         input(type="hidden" name="_csrf" value= csrfToken)
                                         input(type="submit" class="w-full px-2 py-2 md:py-1 text-md leading-5 font-semibold rounded-sm cursor-pointer bg-stone-00 bg-red-100  text-red-800" value="Eliminar")
+            div(class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6")
+                div(class="flex-1 flex justify-between sm:hidden")
+                    a(href=`/my-real-estates?page=${currentPage - 1}` class=`${currentPage == 1 ? 'pointer-events-none text-gray-400' : ''} relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50`) Anterior
+                    a(href=`/my-real-estates?page=${Number(currentPage) + 1}` class=`${currentPage == pages ? 'pointer-events-none text-gray-400' : ''}` class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ") Siguiente
+                div(class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between")
+                    p(class="text-sm text-gray-700 gap-2") Mostrando 
+                        span(class="font-medium") #{offset + 1} a 
+                        span(class="font-medium") #{limit < limit + offset ? total : limit + offset} de 
+                        span(class="font-medium") #{total} resultados
+                div(class="hidden sm:block")
+                    nav(class="relative z-0 inline-flex rounded-md shadow-md")
+                        - let n = 1;
+                            while n <= pages
+                                a(href=`/my-real-estates?page=${n}` class=`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${n == currentPage ? 'bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}`) #{n++}
         else 
             p(class="text-center") No hay propiedades

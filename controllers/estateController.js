@@ -3,21 +3,47 @@ import { validationResult } from 'express-validator';
 import { Price, Category, Estate } from '../models/index.js';
 
 export const admin = async (req, res) => {
-	const { id } = req.user;
 
-    const estates = await Estate.findAll({
-        where: { userId: id },
-		include: [
-			{ model: Category, as: 'category' },
-			{ model: Price, as: 'price' }
-		]
-    })
+	const { page: currentPage = 1 } = req.query;
 
-	res.render('estate/admin', {
-		page: `Mis propiedades`,
-		csrfToken: req.csrfToken(),
-        estates
-	});
+	const expression = /^[1-9]$/
+
+	if(!expression.test(currentPage)) {
+		return res.redirect('/my-real-estates')
+	}
+
+	try {
+		const { id } = req.user;
+
+		const limit = 5;
+		const offset = (currentPage * limit) - limit;
+
+		const [estates, total] = await Promise.all([
+			Estate.findAll({
+				limit,
+				offset,
+				where: { userId: id },
+				include: [
+					{ model: Category, as: 'category' },
+					{ model: Price, as: 'price' }
+				]
+			}),
+			Estate.count({
+				where: { userId: id }
+			})
+		]);
+
+		res.render('estate/admin', {
+			page: `Mis propiedades`,
+			csrfToken: req.csrfToken(),
+			estates,
+			currentPage,
+			pages: Math.ceil(total / limit),
+			total, offset, limit
+		});
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 export const create = async (req, res) => {
