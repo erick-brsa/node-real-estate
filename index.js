@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 
 import userRoutes from './routes/userRoutes.js';
 import estateRoutes from './routes/estateRoutes.js';
+import appRoutes from './routes/appRoutes.js';
+import apiRoutes from './routes/apiRoutes.js';
 import db from './config/db.js';
 
 // Crear la app
@@ -19,9 +21,13 @@ app.use(cookieParser());
 app.use(csurf({ cookie: true }));
 // Carpeta pública
 app.use(express.static('public'));
+
 // Routing
-app.use('/auth', userRoutes);
+app.use('/', appRoutes);
 app.use('/', estateRoutes);
+app.use('/auth', userRoutes);
+app.use('/api', apiRoutes);
+
 
 // Conexión a la base de datos
 try {

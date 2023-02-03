@@ -1,0 +1,43 @@
+extends ./layout/app
+
+block styles
+    link(rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css")
+
+block content 
+    div(class="py-5")
+        h1(class="text-center text-4xl font-extrabold") Ubicación en el mapa
+
+        div(class="flex flex-col md:flex-row items-center py-10 gap-4")
+            h2(class="text-sm uppercase text-gray-800 font-bold") Filtrar propiedades: 
+
+            div(class="w-full md:w-auto flex items-center gap-2")
+                label(for="categories" class="text-sm w-24 uppercase text-gray-500 font-bold") Categorias 
+                select(id="categories" name="categories" class="bg-white flex-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow")  
+                    option(value="") Seleccione
+                    each category in categories 
+                        option(value=category.id)= category.name
+            
+            div(class="w-full md:w-auto flex items-center gap-2")
+                label(for="price" class="text-sm w-24 uppercase text-gray-500 font-bold") Precio 
+                select(id="prices" name="prices" class="bg-white flex-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow")  
+                    option(value="") Seleccione
+                    each price in prices 
+                        option(value=price.id)= price.value
+
+        div(id="map" class="h-[300px] xl:h-[360px] 2xl:h-[600px] mt-5")
+
+        section(class="py-5 ")
+            h2(class="text-center text-4xl font-extrabold pt-10") Casas en venta
+            div(class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 mt-5")
+                each estate in houses
+                    include ./templates/card
+
+        section(class="py-5 ")
+            h2(class="text-center text-4xl font-extrabold pt-10") Departamentos en venta
+            div(class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 mt-5")
+                each estate in departments
+                    include ./templates/card
+
+block scripts
+    script(src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js")
+    script(src="/js/mainMap.js")
