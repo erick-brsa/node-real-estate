@@ -1,8 +1,21 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { admin, save, create, addImage, saveImages, edit, saveChanges, deleteEstate, showEstate } from '../controllers/estateController.js';
+import { 
+	admin, 
+	save, 
+	create, 
+	addImage, 
+	saveImages, 
+	edit, 
+	saveChanges, 
+	deleteEstate, 
+	showEstate,
+	sendMessage,
+	readMessages
+} from '../controllers/estateController.js';
 import protectRoute from '../middleware/protectRoute.js';
 import upload from '../middleware/uploadFile.js';
+import identifyUser from '../middleware/indentifyUser.js';
 
 const router = express.Router();
 
@@ -58,6 +71,13 @@ router.post('/real-estate/edit/:id', protectRoute,
 router.post('/real-estate/delete/:id', protectRoute, deleteEstate);
 
 // Área pública
-router.get('/estate/:id', showEstate);
+router.get('/estate/:id', identifyUser, showEstate);
+router.post('/estate/:id', 
+	identifyUser, 
+	body('message').isLength({ min: 15 }).withMessage('El mensaje es muy corto'),
+	sendMessage
+);
+
+router.get('/messages/:id', protectRoute, readMessages);
 
 export default router;

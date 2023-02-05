@@ -1,6 +1,7 @@
 import { unlink } from 'node:fs/promises';
 import { validationResult } from 'express-validator';
-import { Price, Category, Estate } from '../models/index.js';
+import { Price, Category, Estate, Message, User } from '../models/index.js';
+import { isSeller, formatDate } from '../helpers/index.js';
 
 export const admin = async (req, res) => {
 
@@ -25,7 +26,8 @@ export const admin = async (req, res) => {
 				where: { userId: id },
 				include: [
 					{ model: Category, as: 'category' },
-					{ model: Price, as: 'price' }
+					{ model: Price, as: 'price' },
+					{ model: Message, as: 'messages' }
 				]
 			}),
 			Estate.count({
@@ -248,6 +250,30 @@ export const showEstate = async (req, res) => {
 	const estate = await Estate.findByPk(id, {
 		include: [
 			{ model: Price, as: 'price' },
+			{ model: Category, as: 'category' },
+			{ model: Message, as: 'messages' }
+		]
+	});
+	
+	if (!estate) {
+		return res.redirect('/404');
+	}
+
+	res.render('estate/show', {
+		estate,
+		page: estate.title,
+		csrfToken: req.csrfToken(),
+		user: req.user,
+		isSeller: isSeller(req.user?.id, estate.userId),
+		errors: []
+	});
+};
+
+export const sendMessage = async(req, res) => {
+	const { id } = req.params;
+	const estate = await Estate.findByPk(id, {
+		include: [
+			{ model: Price, as: 'price' },
 			{ model: Category, as: 'category' }
 		]
 	});
@@ -255,10 +281,64 @@ export const showEstate = async (req, res) => {
 	if (!estate) {
 		return res.redirect('/404');
 	}
-	
+	// Renderizar errores
+	let result = validationResult(req);
+
+	if (!result.isEmpty()) {
+		return res.render('estate/edit', {
+			estate,
+			page: `Editar propiedad: ${req.body.title}`,
+			csrfToken: req.csrfToken(),
+			errors: result.array(),
+			user: req.user,
+			isSeller: isSeller(req.user?.id, estate.userId)
+		});
+	}
+
+	try {
+		const saved = await Message.create({
+			message: req.body.message,
+			estateId: req.params.id,
+			userId: req.user.id
+		});
+		console.log(saved)
+	} catch (error) {
+		console.log(error);
+	}
+
 	res.render('estate/show', {
 		estate,
 		page: estate.title,
 		csrfToken: req.csrfToken(),
+		user: req.user,
+		isSeller: isSeller(req.user?.id, estate.userId),
+		errors: [],
+		sent: true
+	});
+};
+
+export const readMessages = async (req, res) => {
+	const { id } = req.params;
+	const estate = await Estate.findByPk(id, {
+		include: [
+			{ 
+				model: Message, as: 'messages',
+				include: [ { model: User.scope('removePassword'), as: 'user' } ]
+		 	}
+		]
+	});
+	
+	if(!estate) {
+		return res.redirect('/my-real-estates');
+	}
+
+	if(estate.userId.toString() !== req.user.id.toString()) {
+		return res.redirect('/my-real-estates');
+	}
+
+	res.render('estate/messages', {
+		page: 'Mensajes',
+		messages: estate.messages,
+		formatDate
 	});
 };
