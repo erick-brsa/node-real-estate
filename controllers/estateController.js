@@ -258,6 +258,7 @@ export const showEstate = async (req, res) => {
 	
 	res.render('estate/show', {
 		estate,
-		page: estate.title
+		page: estate.title,
+		csrfToken: req.csrfToken(),
 	});
 };

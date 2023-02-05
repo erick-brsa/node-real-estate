@@ -10,9 +10,9 @@ router.get('/', home);
 router.get('/category/:id', categories);
 
 // Buscador
-router.post('/search');
+router.post('/search', search);
 
 // Página 404
-router.get('/404');
+router.get('/404', notfound);
 
 export default router;
